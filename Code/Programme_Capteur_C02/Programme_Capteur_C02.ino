@@ -50,18 +50,18 @@ int ledB = 15; // La quatrième led est reliée à la sortie 15 qui sur le micro
 void setup() {
   // put your setup code here, to run once:
   
-Serial.begin(9600); // Ouvre le port série à 9600 bauds
-Serial.println("SCD30 Example");
-Wire.begin();
-if (airSensor.begin() == false)
-{
-Serial.println("Air sensor not detected. Please check wiring. Freezing...");
-while (1);
-}
-pinMode(ledR, OUTPUT); // Broche 13 en sortie
-pinMode(ledO, OUTPUT); // Broche 12 en sortie
-pinMode(ledV, OUTPUT); // Broche 14 en sortie
-pinMode(ledB, OUTPUT); // Broche 15 en sortie
+  Serial.begin(9600); // Ouvre le port série à 9600 bauds
+  Serial.println("SCD30 Example");
+  Wire.begin();
+  if (airSensor.begin() == false)
+  {
+    Serial.println("Air sensor not detected. Please check wiring. Freezing...");
+    while (1);
+  }
+  pinMode(ledR, OUTPUT); // Broche 13 en sortie
+  pinMode(ledO, OUTPUT); // Broche 12 en sortie
+  pinMode(ledV, OUTPUT); // Broche 14 en sortie
+  pinMode(ledB, OUTPUT); // Broche 15 en sortie
 
  // Initialise la lecture du capteur C02
   airSensor.begin(BAUDRATE);
@@ -82,58 +82,54 @@ pinMode(ledB, OUTPUT); // Broche 15 en sortie
 
 void loop() 
 {
-  // put your main code here, to run repeatedly:
-while (airSensor.dataAvailable())
-{
-taux_co2 = (int)airSensor.getCO2();
-Serial.print("co2(ppm):");
-Serial.print(taux_co2);
-Serial.print(" temp(C):");
-Serial.print(airSensor.getTemperature(), 1);
-Serial.print(" humidity(%):");
-Serial.print(airSensor.getHumidity(), 1);
-Serial.println();
-if (taux_co2 <= 600){ // Si taux_co2 inférieur ou égal à 600 alors
-digitalWrite(ledB,HIGH); // La led bleu s'allume 
-digitalWrite(ledV,LOW); // La led verte reste éteinte
-digitalWrite(ledO,LOW); // La led orange reste éteinte
-digitalWrite(ledR,LOW); // La led rouge reste éteinte
-}
-else if (taux_co2 <= 800){ // Si sinon le taux_co2 inférieur ou égal à 800 alors
-digitalWrite(ledB,LOW); // La led bleu reste éteinte
-digitalWrite(ledV,HIGH); // La led verte s'allume
-digitalWrite(ledO,LOW); // La led orange reste éteinte
-digitalWrite(ledR,LOW); // La led rouge reste éteinte
-}
-else if (taux_co2 >= 800 && taux_co2 <= 1000){ // Si sinon taux_co2 supérieur ou égal à 800 et inférieur ou égale à 1000 alors
-digitalWrite(ledB,LOW); // La led bleu reste éteinte
-digitalWrite(ledV,LOW); // La led verte reste éteinte
-digitalWrite(ledO,HIGH); // La led orange s'allume
-digitalWrite(ledR,LOW); // La led rouge reste éteinte
-}
-else if (taux_co2 >= 1000){ // Si sinon taux_co2 supérieur ou égal à 1000 alors
-digitalWrite(ledB,LOW); // La led bleu reste éteinte
-digitalWrite(ledV,LOW); // La led verte reste éteinte
-digitalWrite(ledO,LOW); // La led orange reste éteinte
-digitalWrite(ledR,HIGH); // La led rouge s'allume
-}
-}
-delay(500); // Pause de 5 secondes
 
- // Par intervals régulier capture la donnée et l'affiche :
+ // Par intervalles réguliers capture la donnée et l'affiche :
   if (millis() - getDataTimer >= SensorInterval)
   {
-    
     taux_co2 = airSensor.getCO2();    // Numérisation de la donnée de CO2
     
-    Serial.println(taux_co2);    // affichage du taux de CO2 sur le port ESP8266
+    Serial.print("co2(ppm):");
+    Serial.print(taux_co2);
+    Serial.print(" temp(C):");
+    Serial.print(airSensor.getTemperature(), 1);
+    Serial.print(" humidity(%):");
+    Serial.print(airSensor.getHumidity(), 1);
+    Serial.println();
+    
+    if (taux_co2 <= 600){ // Si taux_co2 inférieur ou égal à 600 alors
+      Serial.println("blue");
+      digitalWrite(ledB,HIGH); // La led bleu s'allume 
+      digitalWrite(ledV,LOW); // La led verte reste éteinte
+      digitalWrite(ledO,LOW); // La led orange reste éteinte
+      digitalWrite(ledR,LOW); // La led rouge reste éteinte
+    }
+    else if (taux_co2 <= 800){ // Sinon si taux_co2 inférieur ou égal à 800 alors
+      Serial.println("green");
+      digitalWrite(ledB,LOW); // La led bleu reste éteinte
+      digitalWrite(ledV,HIGH); // La led verte s'allume
+      digitalWrite(ledO,LOW); // La led orange reste éteinte
+      digitalWrite(ledR,LOW); // La led rouge reste éteinte
+    }
+    else if (taux_co2 <= 1000){ // Sinon si inférieur ou égal à 1000 alors
+      Serial.println("orange");
+      digitalWrite(ledB,LOW); // La led bleu reste éteinte
+      digitalWrite(ledV,LOW); // La led verte reste éteinte
+      digitalWrite(ledO,HIGH); // La led orange s'allume
+      digitalWrite(ledR,LOW); // La led rouge reste éteinte
+    }
+    else { // Sinon (taux_co2 supérieur à 1000) alors
+      Serial.println("red");
+      digitalWrite(ledB,LOW); // La led bleu reste éteinte
+      digitalWrite(ledV,LOW); // La led verte reste éteinte
+      digitalWrite(ledO,LOW); // La led orange reste éteinte
+      digitalWrite(ledR,HIGH); // La led rouge s'allume
+    }
     
     getDataTimer = millis();   // stocker les donnée d'interval
 
     screenDisplay();           // afficher la donnee sur l'ecran 7 segement (si un seuil est atteint, declanche animation)
     
   }
-  
 }
 
 
