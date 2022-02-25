@@ -88,10 +88,10 @@ void loop()
     Serial.println(taux_co2);    // affichage du taux de CO2 sur le port ESP8266
 
     int delta = 0;
-    int ref_co2_from_NASA = 417;
-    delta = taux_co2 - ref_co2_from_NASA;
+    int ref_co2 = 610; // ppm
+    delta = taux_co2 - ref_co2;
     Serial.println(delta);
-    airSensor.setForcedRecalibrationFactor(ref_co2_from_NASA);
+    airSensor.setForcedRecalibrationFactor(ref_co2);
     Serial.print("co2(ppm):");
     Serial.print(taux_co2);
     Serial.print(" temp(C):");
